@@ -118,6 +118,45 @@ app/src/main/
    ./gradlew installDebug
    ```
 
+### Run on a Physical Android Device (USB)
+
+1. Enable Developer Options on your phone:
+   - Open `Settings` > `About phone`.
+   - Tap `Build number` 7 times.
+
+2. Enable USB debugging:
+   - Open `Settings` > `Developer options`.
+   - Turn on `USB debugging`.
+   - Turn on `USB install`.
+
+3. Connect your phone with a USB data cable.
+
+4. Allow debugging on the phone when prompted:
+   - Tap `Allow` on the `Allow USB debugging?` dialog.
+   - Optional: enable `Always allow from this computer`.
+
+5. In Android Studio:
+   - Select your physical device from the run target dropdown or check if your computer has already detected your physical device.
+   - Click `Run` to install and launch Deckly.
+
+6. Optional (terminal install):
+   ```bash
+   ./gradlew installDebug
+   ```
+
+7. Verify device connection (optional):
+   ```bash
+   adb devices
+   ```
+   Your phone should appear as `device` (not `unauthorized` or `offline`).
+
+#### USB Troubleshooting
+
+- If the device does not appear, change USB mode to `File Transfer (MTP)`.
+- If status is `unauthorized`, reconnect the cable and accept the debug prompt again.
+- On Windows, install/update the OEM USB driver (Samsung, Xiaomi, etc.) if needed.
+- Try a different USB cable/port; some cables are charge-only and do not transfer data.
+
 ## How It Works
 
 ```
