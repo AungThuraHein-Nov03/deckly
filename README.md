@@ -19,7 +19,7 @@ Each day, draw a **Luck Card** and three **Active Quest** cards from a 56-card d
 
 ## The Card System
 
-Deckly's cards carry meaning only when you assign it. Before you start, define what each variable means to you.
+Deckly's cards carry meaning only when you assign it. Before you start, define what each variable means to you. The most important part of Deckly is that the meaning is yours.
 
 ### Suits — What are you doing?
 
@@ -45,7 +45,20 @@ The rank sets the **weight** of the quest — map it to time, complexity, or pri
 
 ### The Luck Card — Your Daily Aura
 
-The Luck Card is **not a task**. Keep it face-down until you're ready. It acts as a mindset modifier for the day — a quiet signal that shapes how you approach everything else.
+The Luck Card is **not a task**. Keep it face-down until you're ready. It acts as a mindset modifier for the day — a quiet signl that you reveal at the end of a day or when you've accomplished the tasks.
+
+Here is a baseline for what your daily luck card could mean (though you can obviously indicate anything you want to fit your life):
+
+| Symbol | Luck Theme |
+|---|---|
+| ♠️ Spades | The Trial |
+| ♦️ Diamonds | The Momentum |
+| ♣️ Clubs | The Reliability |
+| ♥️ Hearts | The Flow |
+
+**Special Modifiers:**
+- **Ace** — *Critical Luck*
+- **Jokers** — *Total Unpredictability*
 
 Revealing it at the end of a productive day becomes your Victory Lap.
 
