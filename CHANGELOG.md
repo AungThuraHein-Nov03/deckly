@@ -1,5 +1,19 @@
 # CHANGELOG — Deckly
 
+## [0.0.4] — 2026-03-12
+
+### Added
+- **Light/Dark mode toggle** — Added a top-right theme toggle on the main screen to switch between light and dark mode instantly.
+- **Theme preference persistence** — Theme mode is stored in `SharedPreferences` and restored across app restarts.
+- **Daily journal snapshots** — At day rollover, Deckly now archives a daily journal entry containing the date, luck card, and quest cards.
+- **Midnight journal scheduler** — Added a background WorkManager job to trigger end-of-day journal archiving around 12am.
+- **Journal page button** — Added `Journal` and `Back` buttons to move between the main page and a simple journal list view.
+
+### Changed
+- **Material theme architecture** — `DecklyTheme` now supports both light and dark color schemes.
+- **Contrast tuning for readability** — Updated dark-mode surface, background, and muted text colors to keep card UI and helper text readable.
+- **New-day fallback archiving** — When opening the app after rollover, Deckly archives the previous day before drawing fresh cards.
+
 ## -- To fix --
 - **Test in progress**
 

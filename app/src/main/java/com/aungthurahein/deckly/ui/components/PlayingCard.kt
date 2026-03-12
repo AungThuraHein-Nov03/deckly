@@ -343,7 +343,7 @@ private fun suitColor(suit: Suit): Color =
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PreviewAceOfHearts() {
-    DecklyTheme {
+    DecklyTheme(darkTheme = false) {
         PlayingCard(
             card = Card(rank = 1, suit = Suit.HEARTS, isRevealed = true),
             modifier = Modifier.size(160.dp, 224.dp)
@@ -354,7 +354,7 @@ private fun PreviewAceOfHearts() {
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PreviewKingOfSpades() {
-    DecklyTheme {
+    DecklyTheme(darkTheme = false) {
         PlayingCard(
             card = Card(rank = 13, suit = Suit.SPADES, isRevealed = true),
             modifier = Modifier.size(160.dp, 224.dp)
@@ -365,7 +365,7 @@ private fun PreviewKingOfSpades() {
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PreviewSevenOfDiamonds() {
-    DecklyTheme {
+    DecklyTheme(darkTheme = false) {
         PlayingCard(
             card = Card(rank = 7, suit = Suit.DIAMONDS, isRevealed = true),
             modifier = Modifier.size(160.dp, 224.dp)
@@ -376,7 +376,7 @@ private fun PreviewSevenOfDiamonds() {
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PreviewCardBack() {
-    DecklyTheme {
+    DecklyTheme(darkTheme = false) {
         PlayingCard(
             card = Card(rank = 5, suit = Suit.CLUBS, isRevealed = false),
             modifier = Modifier.size(160.dp, 224.dp)
@@ -387,7 +387,7 @@ private fun PreviewCardBack() {
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun PreviewJoker() {
-    DecklyTheme {
+    DecklyTheme(darkTheme = false) {
         PlayingCard(
             card = Card(rank = 0, suit = Suit.HEARTS, isRevealed = true),
             modifier = Modifier.size(160.dp, 224.dp)

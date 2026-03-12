@@ -3,6 +3,7 @@ package com.aungthurahein.deckly.viewmodel
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import com.aungthurahein.deckly.data.DailyJournalStore
 import com.aungthurahein.deckly.model.Card
 import com.aungthurahein.deckly.model.Suit
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,11 +17,18 @@ enum class AppPhase {
     REVIEW
 }
 
+enum class ThemeMode {
+    SYSTEM,
+    LIGHT,
+    DARK
+}
+
 data class DeckState(
     val luckCard: Card? = null,
     val questCards: List<Card> = emptyList(),
     val phase: AppPhase = AppPhase.MORNING_DRAW,
-    val drawnDate: LocalDate? = null
+    val drawnDate: LocalDate? = null,
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,6 +55,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun refreshIfNewDay() {
         val today = LocalDate.now()
         if (_state.value.drawnDate != today) {
+            DailyJournalStore.archiveIfDayEnded(getApplication())
             drawCards()
         }
     }
@@ -119,6 +128,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         saveState()
     }
 
+    fun setThemeMode(mode: ThemeMode) {
+        _state.update { current ->
+            current.copy(themeMode = mode)
+        }
+        saveState()
+    }
+
+    fun toggleThemeMode(systemDarkMode: Boolean) {
+        val currentMode = _state.value.themeMode
+        val nextMode = when (currentMode) {
+            ThemeMode.LIGHT -> ThemeMode.DARK
+            ThemeMode.DARK -> ThemeMode.LIGHT
+            ThemeMode.SYSTEM -> if (systemDarkMode) ThemeMode.LIGHT else ThemeMode.DARK
+        }
+        setThemeMode(nextMode)
+    }
+
     private fun serializeCard(card: Card): String =
         "${card.rank},${card.suit.name},${card.isRevealed}"
 
@@ -138,6 +164,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .putString("questCards", current.questCards.joinToString("|") { serializeCard(it) })
             .putString("phase", current.phase.name)
             .putString("drawnDate", current.drawnDate?.toString())
+            .putString("themeMode", current.themeMode.name)
             .apply()
     }
 
@@ -150,11 +177,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val phase = try {
             AppPhase.valueOf(prefs.getString("phase", null) ?: return null)
         } catch (_: Exception) { return null }
+        val themeMode = try {
+            ThemeMode.valueOf(prefs.getString("themeMode", ThemeMode.SYSTEM.name) ?: ThemeMode.SYSTEM.name)
+        } catch (_: Exception) { ThemeMode.SYSTEM }
         return DeckState(
             luckCard = luckCard,
             questCards = questCards,
             phase = phase,
-            drawnDate = drawnDate
+            drawnDate = drawnDate,
+            themeMode = themeMode
         )
     }
 }
