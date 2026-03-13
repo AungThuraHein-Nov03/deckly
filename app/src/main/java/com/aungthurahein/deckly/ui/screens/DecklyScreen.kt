@@ -35,6 +35,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aungthurahein.deckly.data.DailyJournalStore
+import com.aungthurahein.deckly.model.Suit
 import com.aungthurahein.deckly.ui.components.PlayingCard
 import com.aungthurahein.deckly.viewmodel.AppPhase
 import com.aungthurahein.deckly.viewmodel.MainViewModel
@@ -43,6 +44,25 @@ import com.aungthurahein.deckly.viewmodel.ThemeMode
 private enum class DecklyPage {
     MAIN,
     JOURNAL
+}
+
+private fun rankLabel(rank: Int): String = when (rank) {
+    0 -> "★"
+    1 -> "A"
+    in 2..10 -> rank.toString()
+    11 -> "J"
+    12 -> "Q"
+    13 -> "K"
+    else -> "?"
+}
+
+private fun formatSerializedCard(serialized: String): String {
+    val parts = serialized.split(",")
+    if (parts.size < 2) return serialized
+
+    val rank = parts[0].toIntOrNull() ?: return serialized
+    val suit = runCatching { Suit.valueOf(parts[1]) }.getOrNull() ?: return rankLabel(rank)
+    return "${rankLabel(rank)}${suit.symbol}"
 }
 
 @Composable
@@ -217,12 +237,12 @@ fun DecklyScreen(viewModel: MainViewModel = viewModel()) {
                                     )
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
-                                        text = "Luck: ${entry.luckCardSerialized}",
+                                        text = "Luck: ${formatSerializedCard(entry.luckCardSerialized)}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Tasks: ${entry.questCardsSerialized.joinToString()}",
+                                        text = "Tasks: ${entry.questCardsSerialized.joinToString { formatSerializedCard(it) }}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )

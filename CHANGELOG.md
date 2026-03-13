@@ -1,5 +1,12 @@
 # CHANGELOG — Deckly
 
+## -- To fix --
+
+## [0.0.5] — 2026-03-13
+
+### Changed
+- **Journal card text simplified** — Journal entries now display only card rank and suit (for example, `Q♠`, `K♦`) instead of raw serialized values.
+
 ## [0.0.4] — 2026-03-12
 
 ### Added
@@ -13,9 +20,6 @@
 - **Material theme architecture** — `DecklyTheme` now supports both light and dark color schemes.
 - **Contrast tuning for readability** — Updated dark-mode surface, background, and muted text colors to keep card UI and helper text readable.
 - **New-day fallback archiving** — When opening the app after rollover, Deckly archives the previous day before drawing fresh cards.
-
-## -- To fix --
-- **Test in progress**
 
 ## [0.0.3] — 2026-03-11
 

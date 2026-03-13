@@ -15,7 +15,7 @@ Each day, draw a **Luck Card** and three **Active Quest** cards from a 56-card d
 - 🗃️ **Full Deck** — 52 standard cards plus 4 Jokers (one per suit), with accurate rank labels, suit symbols, and face-card artwork.
 - ✨ **Flip Animation** — Smooth 3D card-flip animation (600 ms) when revealing any card.
 - 🌓 **Light / Dark Toggle** — Switch themes from the top-right toggle; preference is remembered across app restarts.
-- 📔 **Daily Journal Capture** — At day rollover (12am), Deckly records the date, luck card, and task cards into a daily journal snapshot.
+- 📔 **Daily Journal Capture** — At day rollover (12am), Deckly records the date, luck card, and task cards into a daily journal snapshot, displayed as clean rank+suit values (for example, `Q♠`, `7♥`).
 - 📚 **Journal Page Navigation** — Use the `Journal` button on the main page to view archived daily snapshots and `Back` to return.
 
 ---
