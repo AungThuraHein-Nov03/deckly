@@ -2,6 +2,14 @@
 
 ## -- To fix --
 
+## [0.0.6] — 2026-03-15
+
+### Changed
+- **Settings popup added** — Replaced the top-right direct theme toggle with a settings popup.
+- **Theme moved under Settings** — Theme is now one settings entry with `System`, `Light`, and `Dark` choices.
+- **Reveal hints setting added** — Added a `Show reveal hints` toggle to control helper text visibility on the main page.
+- **Header action icon updated** — Top-right button now opens Settings with a dedicated gear icon.
+
 ## [0.0.5] — 2026-03-13
 
 ### Changed

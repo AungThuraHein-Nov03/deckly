@@ -1,6 +1,5 @@
 package com.aungthurahein.deckly.ui.screens
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,13 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,13 +33,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aungthurahein.deckly.data.DailyJournalStore
-import com.aungthurahein.deckly.model.Suit
-import com.aungthurahein.deckly.ui.components.PlayingCard
-import com.aungthurahein.deckly.viewmodel.AppPhase
 import com.aungthurahein.deckly.viewmodel.MainViewModel
 import com.aungthurahein.deckly.viewmodel.ThemeMode
 
@@ -46,31 +44,20 @@ private enum class DecklyPage {
     JOURNAL
 }
 
-private fun rankLabel(rank: Int): String = when (rank) {
-    0 -> "★"
-    1 -> "A"
-    in 2..10 -> rank.toString()
-    11 -> "J"
-    12 -> "Q"
-    13 -> "K"
-    else -> "?"
-}
-
-private fun formatSerializedCard(serialized: String): String {
-    val parts = serialized.split(",")
-    if (parts.size < 2) return serialized
-
-    val rank = parts[0].toIntOrNull() ?: return serialized
-    val suit = runCatching { Suit.valueOf(parts[1]) }.getOrNull() ?: return rankLabel(rank)
-    return "${rankLabel(rank)}${suit.symbol}"
+private fun themeModeLabel(themeMode: ThemeMode): String = when (themeMode) {
+    ThemeMode.SYSTEM -> "System"
+    ThemeMode.LIGHT -> "Light"
+    ThemeMode.DARK -> "Dark"
 }
 
 @Composable
 fun DecklyScreen(viewModel: MainViewModel = viewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val isSystemDark = isSystemInDarkTheme()
     val context = LocalContext.current
     var currentPage by remember { mutableStateOf(DecklyPage.MAIN) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showRevealHints by remember { mutableStateOf(true) }
     val journalEntries by remember(state.drawnDate, state.phase, state.luckCard, state.questCards) {
         mutableStateOf(DailyJournalStore.loadEntries(context))
     }
@@ -117,140 +104,120 @@ fun DecklyScreen(viewModel: MainViewModel = viewModel()) {
                     modifier = Modifier.align(Alignment.Center)
                 )
 
-                val toggleContentDescription = when (state.themeMode) {
-                    ThemeMode.DARK -> "Switch to light mode"
-                    ThemeMode.LIGHT -> "Switch to dark mode"
-                    ThemeMode.SYSTEM -> if (isSystemDark) "Switch to light mode" else "Switch to dark mode"
-                }
-
                 FilledTonalIconButton(
-                    onClick = { viewModel.toggleThemeMode(isSystemDark) },
+                    onClick = { showSettingsDialog = true },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .semantics { contentDescription = toggleContentDescription }
+                        .semantics { contentDescription = "Open settings" }
                 ) {
                     Text(
-                        text = if (state.themeMode == ThemeMode.DARK || (state.themeMode == ThemeMode.SYSTEM && isSystemDark)) "☀️" else "🌙",
+                        text = "⚙️",
                         fontSize = 18.sp
                     )
                 }
             }
 
-            if (currentPage == DecklyPage.MAIN) {
-                Spacer(modifier = Modifier.weight(1f))
+            if (showSettingsDialog) {
+                AlertDialog(
+                    onDismissRequest = { showSettingsDialog = false },
+                    title = { Text(text = "Settings") },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { showThemeDialog = true }
+                                    .padding(vertical = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "Theme",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = themeModeLabel(state.themeMode),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(text = "Change")
+                            }
 
-                // ── Luck Card Section ──────────────────────────────────
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = if (state.phase == AppPhase.REVIEW) "YOUR LUCK — REVEALED" else "YOUR LUCK",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 4.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    state.luckCard?.let { card ->
-                        PlayingCard(
-                            card = card,
-                            modifier = Modifier.size(width = 180.dp, height = 252.dp),
-                            onLongPress = if (state.phase == AppPhase.MORNING_DRAW) {
-                                { viewModel.revealLuckCard() }
-                            } else null
-                        )
-                    }
-
-                    if (state.phase == AppPhase.MORNING_DRAW) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Long press to reveal",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(48.dp))
-
-                // ── Quest Cards Section ────────────────────────────────
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "ACTIVE QUESTS",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 4.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "Tap a card to reveal",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.horizontalScroll(rememberScrollState())
-                    ) {
-                        state.questCards.forEachIndexed { index, card ->
-                            PlayingCard(
-                                card = card,
-                                modifier = Modifier.size(width = 120.dp, height = 168.dp),
-                                onClick = if (!card.isRevealed) {
-                                    { viewModel.revealQuestCard(index) }
-                                } else null
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Show reveal hints",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "Show card reveal helper text on main page",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = showRevealHints,
+                                    onCheckedChange = { showRevealHints = it }
+                                )
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showSettingsDialog = false }) {
+                            Text(text = "Done")
                         }
                     }
-                }
+                )
+            }
 
-                Spacer(modifier = Modifier.weight(1f))
-            } else {
-                Spacer(modifier = Modifier.height(20.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    if (journalEntries.isEmpty()) {
-                        Text(
-                            text = "No journal entries yet.",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        journalEntries.forEach { entry ->
-                            Surface(
-                                shape = MaterialTheme.shapes.medium,
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    Text(
-                                        text = entry.date.toString(),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
+            if (showThemeDialog) {
+                AlertDialog(
+                    onDismissRequest = { showThemeDialog = false },
+                    title = { Text(text = "Theme") },
+                    text = {
+                        Column {
+                            ThemeMode.entries.forEach { mode ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RadioButton(
+                                        selected = state.themeMode == mode,
+                                        onClick = { viewModel.setThemeMode(mode) }
                                     )
-                                    Spacer(modifier = Modifier.height(6.dp))
-                                    Text(
-                                        text = "Luck: ${formatSerializedCard(entry.luckCardSerialized)}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "Tasks: ${entry.questCardsSerialized.joinToString { formatSerializedCard(it) }}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(text = themeModeLabel(mode))
                                 }
                             }
                         }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showThemeDialog = false }) {
+                            Text(text = "Done")
+                        }
                     }
-                }
+                )
+            }
+
+            if (currentPage == DecklyPage.MAIN) {
+                MainPageContent(
+                    state = state,
+                    showRevealHints = showRevealHints,
+                    onRevealLuck = { viewModel.revealLuckCard() },
+                    onRevealQuest = { index -> viewModel.revealQuestCard(index) }
+                )
+            } else {
+                JournalPageContent(journalEntries = journalEntries)
             }
         }
     }
