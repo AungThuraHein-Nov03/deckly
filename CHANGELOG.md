@@ -2,6 +2,11 @@
 
 ## -- To fix --
 
+## [0.0.7] — 2026-03-26
+
+### Fixed
+- **Main page launch crash after `weight` usage** — `MainPageContent` now uses a `ColumnScope` receiver so `Spacer(Modifier.weight(...))` resolves correctly in Compose and the app launches without the `RowColumnParentData?.weight` errors.
+
 ## [0.0.6] — 2026-03-15
 
 ### Changed

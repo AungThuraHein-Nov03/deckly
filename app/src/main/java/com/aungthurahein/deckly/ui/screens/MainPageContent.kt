@@ -3,6 +3,7 @@ package com.aungthurahein.deckly.ui.screens
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,7 +21,7 @@ import com.aungthurahein.deckly.viewmodel.AppPhase
 import com.aungthurahein.deckly.viewmodel.DeckState
 
 @Composable
-fun MainPageContent(
+fun ColumnScope.MainPageContent(
     state: DeckState,
     showRevealHints: Boolean,
     onRevealLuck: () -> Unit,
