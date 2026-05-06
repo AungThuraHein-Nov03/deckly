@@ -2,7 +2,7 @@
 
 > A daily card-drawing Android app inspired by **Sonny Hayes** from the *F1* (2025) film, where he draws a card from a deck before each race and keeps it hidden — a personal ritual for focus and luck.
 
-Each day, draw a **Luck Card** and three **Active Quest** cards from a 56-card deck (52 standard + 4 Jokers). Cards persist throughout the day and automatically refresh at midnight.
+Each day, draw a **Luck Card** and three **Active Quest** cards from a 56-card deck (52 standard + 4 Jokers). Cards persist throughout the day, your streak is tracked across consecutive daily draws, and everything automatically refreshes at midnight.
 
 ---
 
@@ -11,7 +11,8 @@ Each day, draw a **Luck Card** and three **Active Quest** cards from a 56-card d
 - 🃏 **Daily Draw** — A fresh hand is dealt once per day; opening the app on a new day automatically redraws.
 - 🎴 **Luck Card** — Drawn face-down each morning. Long-press to reveal your luck for the day.
 - 🎯 **Active Quests** — Three face-down quest cards dealt alongside the luck card. Tap each one individually to reveal.
-- 💾 **Persistent State** — Your current hand survives app restarts and is restored exactly as you left it.
+- 📈 **Daily Streak** — The main page shows your current consecutive-day streak when you keep drawing cards day after day.
+- 💾 **Persistent State** — Your current hand, theme mode, and streak survive app restarts and are restored exactly as you left them.
 - 🗃️ **Full Deck** — 52 standard cards plus 4 Jokers (one per suit), with accurate rank labels, suit symbols, and face-card artwork.
 - ✨ **Flip Animation** — Smooth 3D card-flip animation (600 ms) when revealing any card.
 - ⚙️ **Settings Popup** — Open the top-right settings popup to configure app options. Theme mode (`System`, `Light`, `Dark`) is one of the settings and is remembered across app restarts.
@@ -71,7 +72,7 @@ Revealing it at the end of a productive day becomes your Victory Lap.
 
 - **UI:** Jetpack Compose + Material3
 - **Architecture:** MVVM (`AndroidViewModel` + `StateFlow`)
-- **State Persistence:** `SharedPreferences`
+- **State Persistence:** `SharedPreferences` for the current hand, theme mode, and streak counter
 - **Theme System:** Material3 theme with System, Light, and Dark modes via popup selector
 - **Language:** Kotlin
 - **Min SDK:** 26 (Android 8.0 Oreo)

@@ -1,6 +1,12 @@
 # CHANGELOG — Deckly
 
-## -- To fix --
+## [Unreleased]
+
+### Added
+- **Daily streak display** — The main page now shows your consecutive-day draw streak.
+
+### Changed
+- **Streak persistence** — Streak count is now saved with the deck state in `SharedPreferences` and restored after app restarts.
 
 ## [0.0.7] — 2026-03-26
 

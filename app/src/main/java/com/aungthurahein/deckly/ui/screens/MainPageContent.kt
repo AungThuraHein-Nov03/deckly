@@ -29,6 +29,15 @@ fun ColumnScope.MainPageContent(
 ) {
     Spacer(modifier = Modifier.weight(1f))
 
+    if (state.streak > 0) {
+        Text(
+            text = "${state.streak} day streak",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
+            letterSpacing = 2.sp
+        )
+    }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = if (state.phase == AppPhase.REVIEW) "YOUR LUCK — REVEALED" else "YOUR LUCK",

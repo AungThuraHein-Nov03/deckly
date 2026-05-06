@@ -28,7 +28,8 @@ data class DeckState(
     val questCards: List<Card> = emptyList(),
     val phase: AppPhase = AppPhase.MORNING_DRAW,
     val drawnDate: LocalDate? = null,
-    val themeMode: ThemeMode = ThemeMode.SYSTEM
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val streak: Int = 0
 )
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -90,12 +91,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun drawCards() {
         val deck = createDeck().shuffled()
         val drawn = deck.take(4)
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+        val previousDate = _state.value.drawnDate
+        val newStreak = when {
+            previousDate == yesterday -> _state.value.streak + 1
+            previousDate == today -> _state.value.streak
+            else -> 1
+        }
 
         _state.value = DeckState(
             luckCard = drawn[0].copy(isRevealed = false),
             questCards = drawn.drop(1).map { it.copy(isRevealed = false) },
             phase = AppPhase.MORNING_DRAW,
-            drawnDate = LocalDate.now()
+            drawnDate = today,
+            themeMode = _state.value.themeMode,
+            streak = newStreak
         )
         saveState()
     }
@@ -165,6 +176,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .putString("phase", current.phase.name)
             .putString("drawnDate", current.drawnDate?.toString())
             .putString("themeMode", current.themeMode.name)
+            .putInt("streak", current.streak)
             .apply()
     }
 
@@ -185,7 +197,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             questCards = questCards,
             phase = phase,
             drawnDate = drawnDate,
-            themeMode = themeMode
+            themeMode = themeMode,
+            streak = prefs.getInt("streak", 1)
         )
     }
 }
